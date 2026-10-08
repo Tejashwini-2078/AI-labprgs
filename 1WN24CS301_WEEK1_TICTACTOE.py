@@ -1,4 +1,4 @@
-# Initialize the board with numbers 1 to 9
+1# Initialize the board with numbers 1 to 9
 board = [" " for _ in range(9)]
 
 
