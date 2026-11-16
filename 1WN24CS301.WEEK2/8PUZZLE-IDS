@@ -1,0 +1,124 @@
+# 8-Puzzle Problem using Iterative Deepening Search (IDS)
+
+GOAL = (1, 2, 3,
+        4, 5, 6,
+        7, 8, 0)
+
+
+# Display puzzle
+def display(state):
+    for i in range(0, 9, 3):
+        print(state[i], state[i + 1], state[i + 2])
+    print()
+
+
+# Generate possible moves
+def get_neighbors(state):
+    neighbors = []
+
+    blank = state.index(0)
+
+    # Up, Down, Left, Right
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    row = blank // 3
+    col = blank % 3
+
+    for dr, dc in moves:
+        new_row = row + dr
+        new_col = col + dc
+
+        if 0 <= new_row < 3 and 0 <= new_col < 3:
+
+            new_blank = new_row * 3 + new_col
+
+            new_state = list(state)
+
+            new_state[blank], new_state[new_blank] = \
+                new_state[new_blank], new_state[blank]
+
+            neighbors.append(tuple(new_state))
+
+    return neighbors
+
+
+# Depth Limited Search
+def depth_limited_search(state, depth, path, visited):
+
+    # Goal test
+    if state == GOAL:
+        return path
+
+    # Depth limit reached
+    if depth == 0:
+        return None
+
+    visited.add(state)
+
+    for neighbor in get_neighbors(state):
+
+        if neighbor not in visited:
+
+            result = depth_limited_search(
+                neighbor,
+                depth - 1,
+                path + [neighbor],
+                visited
+            )
+
+            if result:
+                return result
+
+    visited.remove(state)
+
+    return None
+
+
+# Iterative Deepening Search
+def ids(start):
+
+    depth = 0
+
+    while True:
+
+        visited = set()
+
+        result = depth_limited_search(
+            start,
+            depth,
+            [start],
+            visited
+        )
+
+        if result:
+            return result, depth
+
+        depth += 1
+
+
+# Main program
+print("8-PUZZLE USING IDS")
+print("Enter 9 numbers (0 represents blank space):")
+
+start = tuple(map(int, input().split()))
+
+if len(start) != 9:
+    print("Invalid input!")
+
+else:
+
+    print("\nInitial State:")
+    display(start)
+
+    solution, depth = ids(start)
+
+    print("Solution Found!")
+    print("Depth:", depth)
+    print("Number of moves:", len(solution) - 1)
+
+    print("\nSolution Path:")
+
+    for i, state in enumerate(solution):
+
+        print("Step", i)
+        display(state)
