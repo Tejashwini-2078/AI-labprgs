@@ -1,0 +1,90 @@
+
+import random
+
+def calculate_cost(state):
+    conflicts = 0
+    n = len(state)
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            if abs(state[i] - state[j]) == abs(i - j):
+                conflicts += 1
+
+    return conflicts
+
+
+def get_neighbors(state):
+    neighbors = []
+    n = len(state)
+
+    for col in range(n):
+        for row in range(n):
+            if row != state[col]:
+                new_state = state.copy()
+                new_state[col] = row
+                neighbors.append(new_state)
+
+        
+    return neighbors
+
+
+def hill_climbing(n):
+    current = [random.randint(0, n - 1) for _ in range(n)]
+    step = 1
+
+    while True:
+        current_cost = calculate_cost(current)
+
+        print("\nStep", step)
+        print("Current State:", current)
+        print("Current Cost:", current_cost)
+
+        if current_cost == 0:
+            print("Goal State Reached!")
+            display_board(current)
+            return
+
+        neighbors = get_neighbors(current)
+
+        print("\nNeighbor States and Costs:")
+        for neighbor in neighbors:
+            print(neighbor, "-> Cost:",
+                  calculate_cost(neighbor))
+
+        best = min(neighbors, key=calculate_cost)
+        best_cost = calculate_cost(best)
+
+        print("\nBest Neighbor:", best)
+        print("Best Neighbor Cost:", best_cost)
+
+        if best_cost >= current_cost:
+            print("Local minimum reached. Restarting...")
+            current = [
+                random.randint(0, n - 1)
+                for _ in range(n)
+            ]
+            print("New Initial State:", current)
+        else:
+            current = best
+
+        step += 1
+
+
+def display_board(state):
+    n = len(state)
+
+    for row in range(n):
+        for col in range(n):
+            if state[col] == row:
+                print("Q", end=" ")
+            else:
+                print(".", end=" ")
+        print()
+
+
+n = int(input("Enter the number of queens: "))
+
+if n < 1:
+    print("Enter a positive integer.")
+else:
+    hill_climbing(n)
